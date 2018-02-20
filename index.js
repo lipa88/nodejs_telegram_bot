@@ -24,8 +24,8 @@ app.post('/' + process.env['WEBHOOK_URL'], (req, res) => {
       'chat_id':req.body.message.chat.id, 
       'text':'hello',
       'reply_markup':{
-          'resize_keyboard': False, 
-          'one_time_keyboard': False, 
+          'resize_keyboard': false, 
+          'one_time_keyboard': false, 
           'keyboard': [['AC', '+', '-'], 
                        ['7', '8', '9'],
                        ['4', '5', '6'],
