@@ -19,5 +19,5 @@ var server = app.listen(process.env.PORT, "0.0.0.0", () => {
 
 app.post('/' + process.env['WEBHOOK_URL'], (req, res) => {
   console.log(req.body);
-  res.sendStatus(200);
+  res.send({'method':'sendMessage', 'text':'hello'});  
 });
