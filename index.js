@@ -23,7 +23,13 @@ function key(n) {
 
 function make_keys() {
     var res = []
-    var keys_list = [['AC', '+', '-'], ['7', '8', '9'], ['4', '5', '6'], ['1', '2', '3'], [' ', '0' ,' ']]
+    var keys_list = [
+        ['AC', '+', '-'],
+        ['7', '8', '9'], 
+        ['4', '5', '6'], 
+        ['1', '2', '3'], 
+        [' ', '0' ,' '],
+    ]
     keys_list.forEach(function(value_list){
         var current_json = []
         value_list.forEach(function(value){
@@ -34,15 +40,35 @@ function make_keys() {
     return res
 }
 
-app.post('/' + process.env['WEBHOOK_URL'], (req, res) => {
-  console.log(req.body);
+function handle_message(req) {
   res.send({
       'method':'sendMessage',
-      'chat_id':req.body.message.chat.id, 
+      'chat_id':req.body.callback_query.message.chat.id,
       'text':'hello',
       'reply_markup':{
           'inline_keyboard': make_keys()
       }
-  });  
+  });
+
+}
+
+function handle_callback(req) {
+  res.send({
+      'method':'update',
+      'chat_id':req.body.callback_query.message.chat.id,
+      'text':req.body.callback_query.message.chat.text,
+      'reply_markup':{
+          'inline_keyboard': make_keys()
+      }
+  });
+
+}
+
+app.post('/' + process.env['WEBHOOK_URL'], (req, res) => {
+  console.log(req.body);
+  if calback_query in req.body:
+    handle_callback(req)
+    #  if message in req.body:
+    #  handle_message(req)
 });
 
