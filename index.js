@@ -17,6 +17,23 @@ var server = app.listen(process.env.PORT, "0.0.0.0", () => {
   console.log('Web server started at http://%s:%s', host, port);
 });
 
+function key(n) {
+    return {"text": n, "callback_data": n}
+}
+
+function make_keys() {
+    var res = []
+    var keys_list = [['AC', '+', '-'], ['7', '8', '9'], ['4', '5', '6'], ['1', '2', '3'], [' ', '0' ,' ']]
+    keys_list.forEach(function(value_list){
+        var current_json = []
+        value_list.forEach(function(value){
+          current_json.push(key(value));
+        })
+        res.push(current_json);
+    });
+    return res
+}
+
 app.post('/' + process.env['WEBHOOK_URL'], (req, res) => {
   console.log(req.body);
   res.send({
@@ -24,13 +41,8 @@ app.post('/' + process.env['WEBHOOK_URL'], (req, res) => {
       'chat_id':req.body.message.chat.id, 
       'text':'hello',
       'reply_markup':{
-          'resize_keyboard': false, 
-          'one_time_keyboard': false, 
-          'keyboard': [['AC', '+', '-'], 
-                       ['7', '8', '9'],
-                       ['4', '5', '6'],
-                       ['1', '2', '3'],
-                       [' ', '0', ' ']]}
+          'inline_keyboard': make_keys()
+      }
   });  
 });
 
