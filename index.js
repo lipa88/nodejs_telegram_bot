@@ -57,35 +57,59 @@ function handle_message(req, res) {
 
 }
 
-function handle_callback(req, res) {
+function handle_callback(cq, res) {
     var mt
     var cb
-
-    if (req.body.callback_query.data == '+' || req.body.callback_query.data == '-'){
-        mt = req.body.callback_query.message.text; 
-        cb = req.body.callback_query.data;
+    
+    if (cq.data == undefined || cq.data.length == 0) {
+        mt = '0'; 
+        cb = '';
     }
-    else if (req.body.callback_query.data == "++" || req.body.callback_query.data == "--" ||req.body.callback_query.data == "-+" ||req.body.callback_query.data == "+-"){
-        mt = req.body.callback_query.message.text; 
-        cb = req.body.callback_query.data.slice(-1);
+    else if (cq.data.slice(-2) == 'AC') {
+        mt = '0'; 
+        cb = '';
     }
-    else if (req.body.callback_query.message.text.match(/\d+[\+\-]\d+[\+\-]/)) {
-        mt = eval(req.body.callback_query.message.text.slice(0,-2));
-        cb = req.body.callback_query.message.text.slice(-1);
+    else if (cq.data.length == 1) {
+        if (cq.data == '+' || cq.data == '-') {
+            mt = cq.message.text; 
+            cb = cq.message.text + cq.data;
+        }
+        else if (cq.message.text == '0') {
+            mt = cq.data;
+            cb = '';
+        }
+        else {
+            mt = cq.message.text + cq.data;
+            cb = '';
+        }
     }
-    else if (!isNaN(req.body.callback_query.data)){
-        if (req.body.callback_query.message.text != '0'){
-        mt = req.body.callback_query.message.text + req.body.callback_query.data;
-        } 
-        else {mt = req.body.callback_query.data;}
-        cb = ''
+    else {
+        if (cq.data.slice(-1) == '+' || cq.data.slice(-1) == '-') {
+            if (cq.data.slice(-2, -1) == '+' || cq.data.slice(-2, -1) == '-') {
+                mt = cq.message.text;
+                cb = cq.data.slice(0, -2) + cq.data.slice(-1);
+            }
+            else {
+                r = eval(cq.data.slice(0, -1))
+                mt = r;
+                cb = r + cq.data.slice(-1);
+            }
+        }
+        else {
+            if (cq.data.slice(-2, -1) == '+' || cq.data.slice(-2, -1) == '-') {
+                mt = cq.data.slice(-1);
+            }
+            else {
+                mt = cq.message.text + cq.data.slice(-1); 
+            }
+            cb = cq.data;
+        }    
     }
-    else {mt = 0; cb = ''}
 
     res.send({
         'method': 'editMessageText',
-        'chat_id': req.body.callback_query.message.chat.id,
-        'message_id': req.body.callback_query.message.message_id,
+        'chat_id': cq.message.chat.id,
+        'message_id': cq.message.message_id,
         'text': mt,
         'reply_markup': {
             'inline_keyboard': make_keys(cb)
@@ -96,7 +120,7 @@ function handle_callback(req, res) {
 app.post('/' + process.env['WEBHOOK_URL'], (req, res) => {
     console.log(req.body);
     if (req.body.callback_query != undefined) {
-        handle_callback(req, res)
+        handle_callback(req.body.callback_query, res)
     }
     if (req.body.message != undefined) {
         handle_message(req, res)
