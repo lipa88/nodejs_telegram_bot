@@ -60,18 +60,18 @@ function handle_message(req, res) {
 function handle_callback(cq, res) {
     var mt
     var cb
-    
+
     if (cq.data == undefined || cq.data.length == 0) {
-        mt = '0'; 
+        mt = '0';
         cb = '';
     }
     else if (cq.data.slice(-2) == 'AC') {
-        mt = '0'; 
+        mt = '0';
         cb = '';
     }
     else if (cq.data.length == 1) {
         if (cq.data == '+' || cq.data == '-') {
-            mt = cq.message.text; 
+            mt = cq.message.text;
             cb = cq.message.text + cq.data;
         }
         else if (cq.message.text == '0') {
@@ -100,10 +100,10 @@ function handle_callback(cq, res) {
                 mt = cq.data.slice(-1);
             }
             else {
-                mt = cq.message.text + cq.data.slice(-1); 
+                mt = cq.message.text + cq.data.slice(-1);
             }
             cb = cq.data;
-        }    
+        }
     }
 
     res.send({
